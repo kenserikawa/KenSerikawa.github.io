@@ -28,13 +28,20 @@
     <style>
         *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
+        /* Custom scrollbar */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: var(--bg-alt); }
+        ::-webkit-scrollbar-thumb { background: var(--muted); border-radius: 3px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--accent); }
+        html { scrollbar-width: thin; scrollbar-color: var(--muted) var(--bg-alt); }
+
         /* Dracula Dark (default) */
         :root {
             --bg: #1a1b26;
             --bg-alt: #13141c;
             --text: #a9b1d6;
             --muted: #565f89;
-            --accent: #5d8fba;
+            --accent: #b4a0d6;
             --prism: #7a6faa;
             --mint: #4a9a6a;
             --warm: #b0a070;
@@ -43,10 +50,13 @@
             --red: #a05050;
             --selection: rgba(55, 58, 80, 0.5);
             --tag-border: rgba(86, 95, 137, 0.2);
-            --tag-hover: rgba(93, 143, 186, 0.08);
+            --tag-hover: rgba(180, 160, 214, 0.08);
             --glow1: rgba(122, 111, 170, 0.04);
-            --glow2: rgba(93, 143, 186, 0.03);
+            --glow2: rgba(180, 160, 214, 0.03);
             --font: 'JetBrains Mono', monospace;
+            --fw-body: 300;
+            --fw-heading: 600;
+            --fw-cmd: 600;
         }
 
         /* Light theme */
@@ -55,7 +65,7 @@
             --bg-alt: #eee8d5;
             --text: #282a36;
             --muted: #7c6f8a;
-            --accent: #0d7fa5;
+            --accent: #7c5cbf;
             --prism: #7c3aed;
             --mint: #1a7a3a;
             --warm: #b45309;
@@ -64,9 +74,12 @@
             --red: #dc2626;
             --selection: rgba(109, 76, 145, 0.15);
             --tag-border: rgba(40, 42, 54, 0.12);
-            --tag-hover: rgba(13, 127, 165, 0.1);
+            --tag-hover: rgba(124, 92, 191, 0.1);
             --glow1: rgba(124, 58, 237, 0.04);
-            --glow2: rgba(13, 127, 165, 0.03);
+            --glow2: rgba(124, 92, 191, 0.03);
+            --fw-body: 400;
+            --fw-heading: 700;
+            --fw-cmd: 700;
         }
 
         html { scroll-behavior: smooth; }
@@ -76,6 +89,7 @@
             color: var(--text);
             font-family: var(--font);
             font-size: 14px;
+            font-weight: var(--fw-body);
             line-height: 1.7;
             min-height: 100vh;
             overflow-x: hidden;
@@ -159,23 +173,34 @@
         .p-dollar { color: var(--muted); }
 
         /* Syntax colors */
-        .cmd { color: var(--text); font-weight: 600; }
+        .cmd { color: var(--text); font-weight: var(--fw-cmd); }
         .keyword { color: var(--prism); }
         .string { color: var(--warm); }
         .func { color: var(--accent); }
         .comment { color: var(--muted); font-style: italic; }
         .output { color: var(--text); }
         .ok { color: var(--mint); }
-        .heading { color: var(--accent); font-weight: 600; }
+        .heading { color: var(--accent); font-weight: var(--fw-heading); }
         .subheading { color: var(--prism); }
         .link { color: var(--orange); text-decoration: none; transition: color 0.2s; }
         .link:hover { color: var(--warm); }
         .dim { color: var(--muted); }
         .bright { color: var(--text); }
-        .tag { color: var(--text); display: inline-block; padding: 1px 8px; margin: 2px 3px; border: 1px solid var(--tag-border); border-radius: 4px; font-size: 0.9em; transition: border-color 0.2s, background 0.2s; }
-        .tag:hover { border-color: var(--accent); background: var(--tag-hover); }
-        .tag a { color: inherit; text-decoration: none; }
-        .tag a:hover { color: var(--orange); }
+        .indent { padding-left: 2ch; }
+
+        /* Fake terminal input */
+        .term-input {
+            background: none;
+            border: none;
+            outline: none;
+            color: var(--text);
+            font-family: var(--font);
+            font-size: inherit;
+            font-weight: var(--fw-body);
+            caret-color: var(--mint);
+            width: 40ch;
+            max-width: 50%;
+        }
 
         /* Cursor */
         .cursor {
@@ -351,9 +376,49 @@ function launch() {
     showNext();
 }
 
-document.addEventListener('click', launch);
+var pranked = false;
+var warned = false;
+
+document.addEventListener('click', function(e) {
+    if (e.target.closest('.theme-toggle')) return;
+    if (!pranked) return launch();
+    // After prank, click also launches
+    launch();
+});
 document.addEventListener('keydown', function(e) {
-    if (e.key === 'Enter') launch();
+    if (launched) return;
+    if (e.key === 'Enter') return launch();
+    if (e.key === 'Tab' || e.key === 'Shift' || e.key === 'Control' || e.key === 'Alt' || e.key === 'Meta' || e.key === 'Escape' || e.key === 'CapsLock' || e.key === 'F1' || e.key === 'F2' || e.key === 'F3' || e.key === 'F4' || e.key === 'F5' || e.key === 'F6' || e.key === 'F7' || e.key === 'F8' || e.key === 'F9' || e.key === 'F10' || e.key === 'F11' || e.key === 'F12') return;
+    e.preventDefault();
+
+    if (!pranked) {
+        pranked = true;
+        // Show prank message
+        var pLine = makeLine('mt');
+        pLine.style.color = 'var(--red)';
+        pLine.style.fontWeight = '600';
+        pLine.textContent = 'Wait... did you really think this static page was a working CLI? lmao gotcha';
+        bootContainer.appendChild(pLine);
+
+        // Re-show prompt
+        var newPrompt = makeLine('mt');
+        newPrompt.appendChild(buildPrompt('~'));
+        newPrompt.appendChild(makeSpan('cmd', 'cat profile.txt && cat stack.txt'));
+        newPrompt.appendChild(makeEl('span', 'cursor', ''));
+        bootContainer.appendChild(newPrompt);
+
+        // Remove cursor from old prompt
+        var oldCur = promptLine.querySelector('.cursor');
+        if (oldCur) oldCur.remove();
+        promptLine = newPrompt;
+    } else if (!warned) {
+        warned = true;
+        var wLine = makeLine();
+        wLine.style.color = 'var(--orange)';
+        wLine.style.fontSize = '0.9em';
+        wLine.textContent = '\u26A0 Hint: press ENTER or click anywhere to continue. Your keyboard won\'t help you here ;)';
+        bootContainer.appendChild(wLine);
+    }
 });
 
 // ── Portfolio content — built as terminal output in chunks ──
@@ -469,13 +534,13 @@ function buildContent() {
     richLine([{c:'heading',t:'whoami'}], 'gap');
     richLine([
         'Bringing ', {c:'accent',t:lifeDays}, ' days of life experience, committed to the ever-evolving field of technology through continuous learning and hands-on problem solving. Currently on day ', {c:'ok',t:devDays}, ' as a tech enthusiast.'
-    ]);
+    ], 'indent');
 
     // ─── CHUNK 2: Interests ───
     startChunk();
     richLine([{c:'heading',t:'interests'}], 'gap');
-    textLine('Web development with DDD and TDD Architecture, Container Orchestration,');
-    textLine('CI/CD, AI-Assisted Development, Blockchain and Machine Learning.');
+    textLine('Web development with DDD and TDD Architecture, Container Orchestration,', 'indent');
+    textLine('CI/CD, AI-Assisted Development, Blockchain and Machine Learning.', 'indent');
 
     // ─── CHUNK 3: Experience ───
     startChunk();
@@ -498,88 +563,132 @@ function buildContent() {
     richLine([{c:'heading',t:'ai-development'}], 'gap');
 
     richLine([{c:'subheading',t:'  AI-Assisted Engineering'}], 'mt');
-    var aiEngLine = makeLine();
-    ['Prompt Engineering','Claude Code','GitHub Copilot','Agentic Workflows','AI Code Review','SDD'].forEach(function(t) {
-        aiEngLine.appendChild(makeSpan('tag', t));
-    });
-    currentChunk.appendChild(aiEngLine);
+    textLine('  Prompt Engineering, Claude Code, GitHub Copilot, Agentic Workflows,', 'indent');
+    textLine('  AI Code Review, SDD', 'indent');
 
     richLine([{c:'subheading',t:'  AI Integration'}], 'mt');
-    var aiIntLine = makeLine();
-    ['LLM API Integration','RAG Pipelines','MCP Servers','Vector Databases','OpenAI / Anthropic SDKs'].forEach(function(t) {
-        aiIntLine.appendChild(makeSpan('tag', t));
-    });
-    currentChunk.appendChild(aiIntLine);
+    textLine('  LLM API Integration, RAG Pipelines, MCP Servers, Vector Databases,', 'indent');
+    textLine('  OpenAI / Anthropic SDKs', 'indent');
 
     // ─── CHUNK 5: Skills ───
     startChunk();
     richLine([{c:'heading',t:'skills'}], 'gap');
 
     richLine([{c:'heading',t:'  Languages'}], 'mt');
-    richLine([{c:'bright',t:'  PHP '},{c:'dim',t:'[5 years]'},{c:'muted',t:'  Symfony · Laravel'}]);
-    richLine([{c:'bright',t:'  TypeScript '},{c:'dim',t:'[3 years]'},{c:'muted',t:'  NestJs · Express'}]);
-    richLine([{c:'bright',t:'  Rust '},{c:'dim',t:'[~1 year]'},{c:'muted',t:'  Yew · Anchor · Smart Contracts'}]);
+    richLine([{c:'bright',t:'  PHP '},{c:'dim',t:'[5 years]'},{c:'muted',t:'  Symfony · Laravel'}], 'indent');
+    richLine([{c:'bright',t:'  TypeScript '},{c:'dim',t:'[3 years]'},{c:'muted',t:'  NestJs · Express'}], 'indent');
+    richLine([{c:'bright',t:'  Rust '},{c:'dim',t:'[~1 year]'},{c:'muted',t:'  Yew · Anchor · Smart Contracts'}], 'indent');
 
     richLine([{c:'heading',t:'  Backend & Architecture'}], 'mt');
-    var archLine = makeLine();
-    ['HTTP Lifecycle','RESTful APIs','OOP','TDD','Hexagonal Arch','DDD','Testing'].forEach(function(t) {
-        archLine.appendChild(makeSpan('tag', t));
-    });
-    var htmxTag = makeSpan('tag', '');
+    richLine(['  HTTP Lifecycle, RESTful APIs, OOP, TDD, Hexagonal Arch, DDD,'], 'indent');
+    var archLine = makeLine('indent');
+    archLine.appendChild(document.createTextNode('  Testing, '));
     var htmxA = document.createElement('a');
     htmxA.href = 'https://htmx.org/';
     htmxA.target = '_blank';
     htmxA.className = 'link';
     htmxA.textContent = 'HTMX';
-    htmxTag.appendChild(htmxA);
-    archLine.appendChild(htmxTag);
+    archLine.appendChild(htmxA);
     currentChunk.appendChild(archLine);
 
     richLine([{c:'heading',t:'  Data & Infrastructure'}], 'mt');
-    var dataLine = makeLine();
-    ['MySQL / MariaDB','MongoDB 8.0','Docker','RabbitMQ','Linux','Bash'].forEach(function(t) {
-        dataLine.appendChild(makeSpan('tag', t));
-    });
-    currentChunk.appendChild(dataLine);
+    textLine('  MySQL / MariaDB, MongoDB 8.0, Docker, RabbitMQ, Linux, Bash', 'indent');
 
     richLine([{c:'heading',t:'  Frontend'}], 'mt');
-    var feLine = makeLine();
-    [['Next.js','https://nextjs.org/'],['Vue','https://vuejs.org/'],['React','https://reactjs.org/'],['Tailwind','https://tailwindcss.com/']].forEach(function(pair) {
-        var tag = makeSpan('tag', '');
+    var feLine = makeLine('indent');
+    feLine.appendChild(document.createTextNode('  '));
+    [['Next.js','https://nextjs.org/'],['Vue','https://vuejs.org/'],['React','https://reactjs.org/'],['Tailwind','https://tailwindcss.com/']].forEach(function(pair, i) {
+        if (i > 0) feLine.appendChild(document.createTextNode(', '));
         var a = document.createElement('a');
         a.href = pair[1];
         a.target = '_blank';
         a.className = 'link';
         a.textContent = pair[0];
-        tag.appendChild(a);
-        feLine.appendChild(tag);
+        feLine.appendChild(a);
     });
-    ['Bootstrap','Responsive Design'].forEach(function(t) {
-        feLine.appendChild(makeSpan('tag', t));
-    });
+    feLine.appendChild(document.createTextNode(', Bootstrap, Responsive Design'));
     currentChunk.appendChild(feLine);
 
     richLine([{c:'heading',t:'  CI/CD & DevOps'}], 'mt');
-    var ciLine = makeLine();
-    ciLine.appendChild(makeSpan('tag', 'Git'));
-    [['Jenkins','https://www.jenkins.io/'],['GH Actions','https://github.com/features/actions'],['TG Mini Apps','https://core.telegram.org/bots/webapps']].forEach(function(pair) {
-        var tag = makeSpan('tag', '');
+    var ciLine = makeLine('indent');
+    ciLine.appendChild(document.createTextNode('  Git, '));
+    [['Jenkins','https://www.jenkins.io/'],['GH Actions','https://github.com/features/actions'],['TG Mini Apps','https://core.telegram.org/bots/webapps']].forEach(function(pair, i) {
+        if (i > 0) ciLine.appendChild(document.createTextNode(', '));
         var a = document.createElement('a');
         a.href = pair[1];
         a.target = '_blank';
         a.className = 'link';
         a.textContent = pair[0];
-        tag.appendChild(a);
-        ciLine.appendChild(tag);
+        ciLine.appendChild(a);
     });
     currentChunk.appendChild(ciLine);
 
-    // ─── CHUNK 6: Footer ───
+    // ─── CHUNK 6: Footer (interactive prompt) ───
     startChunk();
     var footerLine = makeLine('gap');
     footerLine.appendChild(buildPrompt('~'));
-    footerLine.appendChild(makeEl('span', 'cursor', ''));
+    var termInput = document.createElement('input');
+    termInput.type = 'text';
+    termInput.className = 'term-input';
+    termInput.setAttribute('autocomplete', 'off');
+    termInput.setAttribute('spellcheck', 'false');
+    footerLine.appendChild(termInput);
     currentChunk.appendChild(footerLine);
+
+    var snarkMessages = [
+        'nice try, but this ain\'t no sandbox buddy',
+        'sorry pal, commands here are just for show',
+        'you really thought you could execute stuff here? cute',
+        'error 418: I\'m a teapot, not a terminal',
+        'permission denied: this is a portfolio, not a playground',
+        'segfault (just kidding, nothing runs here)',
+        'nah. try LinkedIn if you wanna reach me though',
+        'bruh. it\'s HTML. what did you expect?'
+    ];
+    var snarkIndex = 0;
+
+    function handleCommand() {
+        var val = termInput.value.trim();
+        if (!val) return;
+        termInput.value = '';
+
+        // Freeze old prompt: replace input with static text
+        var typed = makeSpan('cmd', val);
+        footerLine.replaceChild(typed, termInput);
+
+        // Error line
+        var errLine = makeLine();
+        errLine.style.color = 'var(--red)';
+        errLine.textContent = snarkMessages[snarkIndex % snarkMessages.length];
+        snarkIndex++;
+        c.appendChild(errLine);
+
+        // New prompt with fresh input
+        footerLine = makeLine('mt');
+        footerLine.appendChild(buildPrompt('~'));
+        termInput = document.createElement('input');
+        termInput.type = 'text';
+        termInput.className = 'term-input';
+        termInput.setAttribute('autocomplete', 'off');
+        termInput.setAttribute('spellcheck', 'false');
+        footerLine.appendChild(termInput);
+        c.appendChild(footerLine);
+        termInput.focus();
+
+        termInput.addEventListener('keydown', function(ev) {
+            if (ev.key === 'Enter') handleCommand();
+        });
+
+        window.scrollTo(0, document.body.scrollHeight);
+    }
+
+    termInput.addEventListener('keydown', function(ev) {
+        if (ev.key === 'Enter') handleCommand();
+    });
+
+    // Focus input once footer chunk is visible
+    var origShowNext = null;
+    setTimeout(function() { termInput.focus(); }, chunks.length * 80 + 200);
 }
 
 </script>
