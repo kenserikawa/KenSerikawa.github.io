@@ -14,7 +14,6 @@
     <meta property="og:url" content="https://kenserikawa.github.io/">
     <meta property="og:title" content="Ken Serikawa | Backend Developer">
     <meta property="og:description" content="PHP · TypeScript · Microservices · DDD/TDD · AI-assisted engineering. This portfolio ships a real terminal.">
-    <!-- TODO(ken): crear img/og.png (1200x630) -->
     <meta property="og:image" content="https://kenserikawa.github.io/img/og.png">
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="Ken Serikawa | Backend Developer">
@@ -629,7 +628,7 @@
         });
         return lines;
     }
-    var HIDDEN_CAT = [
+    var HIDDEN_MONKEY = [
         "                   ',",
         "        .-`-,\\__",
         '          ."`   `,',
@@ -644,7 +643,7 @@
         "        `------' \\",
         '        _/       `--...',
         '',
-        'meow. you read the docs. we would get along.'
+        'U U A A. you read the docs. we would get along.'
     ].join('\n');
 
     var EMAIL = 'kenserikawa.dev@gmail.com';
@@ -680,7 +679,7 @@
             run: function (args) {
                 if (!args.length) return { err: 'cat: missing file operand' };
                 var name = args[0];
-                if (name === '.cat') return HIDDEN_CAT;
+                if (name === '.cat') return HIDDEN_MONKEY;
                 var id = FILES[name];
                 if (!id) return { err: 'cat: ' + name + ': No such file or directory' };
                 return renderSection(id);
