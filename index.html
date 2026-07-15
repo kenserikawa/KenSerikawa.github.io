@@ -488,7 +488,7 @@ function buildContent() {
     // ─── CHUNK 0: Header ───
     startChunk();
     richLine([{c:'heading',t:'Ken Serikawa'}], 'mt');
-    richLine([{c:'subheading',t:'Backend Developer'}], 'mb');
+    richLine([{c:'subheading',t:'Backend Developer · AI-Assisted Engineering'}], 'mb');
 
     var emailLine = makeLine();
     emailLine.appendChild(makeSpan('dim', 'email  '));
@@ -533,21 +533,22 @@ function buildContent() {
     startChunk();
     richLine([{c:'heading',t:'whoami'}], 'gap');
     richLine([
-        'Bringing ', {c:'accent',t:lifeDays}, ' days of life experience, committed to the ever-evolving field of technology through continuous learning and hands-on problem solving. Currently on day ', {c:'ok',t:devDays}, ' as a tech enthusiast.'
+        'Bringing ', {c:'accent',t:lifeDays}, ' days of life experience, committed to the ever-evolving field of technology through continuous learning and hands-on problem solving. Currently on day ', {c:'ok',t:devDays}, ' as a backend-focused engineer building reliable systems and integrating AI-assisted workflows into software delivery.'
     ], 'indent');
 
     // ─── CHUNK 2: Interests ───
     startChunk();
     richLine([{c:'heading',t:'interests'}], 'gap');
-    textLine('Web development with DDD and TDD Architecture, Container Orchestration,', 'indent');
-    textLine('CI/CD, AI-Assisted Development, Blockchain and Machine Learning.', 'indent');
+    textLine('Web development with DDD and TDD Architecture, Microservices, Container', 'indent');
+    textLine('Orchestration, CI/CD, Spec-Driven Development, AI-Assisted Development,', 'indent');
+    textLine('Context Engineering, Blockchain and Machine Learning.', 'indent');
 
     // ─── CHUNK 3: Experience ───
     startChunk();
     richLine([{c:'heading',t:'experience'}], 'gap');
     expBlock('Backend Developer @ Prime IT', 'https://www.primeit.es/',
         'Currently — Nov 2024',
-        'Developing backend services and microservices architectures for enterprise clients, leveraging modern PHP and TypeScript ecosystems with a focus on scalable, maintainable solutions.'
+        'Developing backend services and microservices architectures for enterprise clients, leveraging modern PHP and TypeScript ecosystems with a focus on scalable, maintainable solutions. Also incorporating AI-assisted engineering practices with Claude Code, Spec-Driven Development and structured workflows inspired by OpenSpec, GSD and Superpowers to turn requirements into clearer specifications, implementation tasks and verifiable code.'
     );
     expBlock('Backend Developer @ Alten', 'https://www.alten.es/',
         'Nov 2024 — Jan 2021',
@@ -564,7 +565,12 @@ function buildContent() {
 
     richLine([{c:'subheading',t:'  AI-Assisted Engineering'}], 'mt');
     textLine('  Prompt Engineering, Claude Code, GitHub Copilot, Agentic Workflows,', 'indent');
-    textLine('  AI Code Review, SDD', 'indent');
+    textLine('  AI Code Review, Spec-Driven Development, Context Engineering,', 'indent');
+    textLine('  Structured implementation flows and review-first delivery.', 'indent');
+
+    richLine([{c:'subheading',t:'  Spec & Workflow Systems'}], 'mt');
+    textLine('  OpenSpec, GSD, Superpowers, Requirements-to-Tasks workflows,', 'indent');
+    textLine('  implementation planning, reviewable specs, and iterative execution.', 'indent');
 
     richLine([{c:'subheading',t:'  AI Integration'}], 'mt');
     textLine('  LLM API Integration, RAG Pipelines, MCP Servers, Vector Databases,', 'indent');
@@ -581,8 +587,9 @@ function buildContent() {
 
     richLine([{c:'heading',t:'  Backend & Architecture'}], 'mt');
     richLine(['  HTTP Lifecycle, RESTful APIs, OOP, TDD, Hexagonal Arch, DDD,'], 'indent');
+    richLine(['  Microservices, System Design, Technical Specifications, Testing,'], 'indent');
     var archLine = makeLine('indent');
-    archLine.appendChild(document.createTextNode('  Testing, '));
+    archLine.appendChild(document.createTextNode('  '));
     var htmxA = document.createElement('a');
     htmxA.href = 'https://htmx.org/';
     htmxA.target = '_blank';
@@ -590,6 +597,11 @@ function buildContent() {
     htmxA.textContent = 'HTMX';
     archLine.appendChild(htmxA);
     currentChunk.appendChild(archLine);
+
+    richLine([{c:'heading',t:'  AI Engineering'}], 'mt');
+    textLine('  Claude Code, AI-Assisted Development, Prompt Engineering,', 'indent');
+    textLine('  Spec-Driven Development, OpenSpec, GSD, Superpowers,', 'indent');
+    textLine('  AI Code Review, Context Engineering', 'indent');
 
     richLine([{c:'heading',t:'  Data & Infrastructure'}], 'mt');
     textLine('  MySQL / MariaDB, MongoDB 8.0, Docker, RabbitMQ, Linux, Bash', 'indent');
