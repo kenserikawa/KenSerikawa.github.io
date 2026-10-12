@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <!-- Link preview image (Open Graph / X card): a frozen frame of the CV's own game.
+       Render at 1200×630, device scale 1, and screenshot the viewport → img/og-image.png.
+       Sprites, palette and fonts are copied from the game in index.html (SPR, PAL.dark, WAVES[0]);
+       keep them in sync if those change. Key content stays 40px clear of the edges (X crops to 2:1). -->
+  <title>Ken Serikawa link preview</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500&family=Pixelify+Sans:wght@500;600;700&family=Silkscreen&display=block" rel="stylesheet">
+  <style>
+    :root {
+      --bg: oklch(0.17 0.02 275); --ink: oklch(0.96 0.01 275); --mute: oklch(0.76 0.025 275);
+      --line: oklch(0.37 0.035 275); --a1: oklch(0.83 0.14 165); --a2: oklch(0.78 0.14 25);
+      --a3: oklch(0.85 0.13 85); --a4: oklch(0.78 0.12 255); --star: oklch(0.92 0.02 275);
+    }
+    html, body { width: 1200px; height: 630px; margin: 0; padding: 0; overflow: hidden; background: var(--bg); }
+    canvas { position: absolute; inset: 0; width: 1200px; height: 630px; }
+    .copy { position: absolute; left: 72px; top: 50%; transform: translateY(-50%); width: 560px; color: var(--ink); font-family: 'Geist', sans-serif; }
+    h1 { margin: 0; font-family: 'Pixelify Sans', monospace; font-weight: 700; font-size: 104px; line-height: 0.92; letter-spacing: -0.01em; white-space: nowrap; }
+    h1 .cursor { display: inline-block; width: 0.34em; height: 0.78em; margin-left: 0.1em; vertical-align: -0.02em; background: var(--a1); }
+    .role { margin: 30px 0 0; font-size: 24px; font-weight: 500; color: var(--mute); }
+    .hook { margin: 14px 0 0; max-width: 500px; font-size: 21px; line-height: 1.45; text-wrap: pretty; }
+    .url { margin: 34px 0 0; font-family: 'Silkscreen', monospace; font-size: 17px; letter-spacing: 0.06em; color: var(--a1); }
+  </style>
+</head>
+<body>
+  <canvas id="field" width="1200" height="630"></canvas>
+  <div class="copy">
+    <h1>Ken<br>Serikawa<span class="cursor"></span></h1>
+    <p class="role">Backend Developer · AI-Assisted Engineering</p>
+    <p class="hook">My CV has been captured by four waves of invaders. Clear them to read it.</p>
+    <div class="url">kenserikawa.github.io</div>
+  </div>
+  <script>
+    const SPR = {
+      ship: [".....X.....","....XXX....","....XXX....","..X.XXX.X..",".XXXXXXXXX.","XXXXX.XXXXX","XX.XXXXX.XX","X...X.X...X"],
+      drone: ["..XXXXX..",".X.XXX.X.","XXXXXXXXX","XX.X.X.XX",".XXXXXXX.","X.X...X.X","X.......X"],
+      saucer: ["....XXXXXX....","..XXXXXXXXXX..",".XX.XX..XX.XX.","XXXXXXXXXXXXXX","..XXX....XXX.."],
+      boom: ["....X...X....",".X...X.X...X.","..X.......X..","...X.....X...","XX.........XX","...X.....X...","..X..X.X..X..",".X..X...X..X."]
+    };
+    const ROWS = [['BACKEND', 'PHP', 'TYPESCRIPT', 'DDD'], ['TDD', 'MICROSERVICES', 'AI', 'SPECS']];
+    const css = getComputedStyle(document.documentElement);
+    const c = k => css.getPropertyValue('--' + k).trim();
+    const ROW_COLORS = [c('a1'), c('a4')]; // the game colours rows a1, a4, a2, a3
+    const P = 6;
+
+    const cv = document.getElementById('field');
+    const ctx = cv.getContext('2d');
+
+    // Seeded so every render is identical.
+    let seed = 9;
+    const rnd = () => { seed = (seed + 0x6D2B79F5) | 0; let t = Math.imul(seed ^ (seed >>> 15), 1 | seed); t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t; return ((t ^ (t >>> 14)) >>> 0) / 4294967296; };
+
+    function sprite(rows, x, y, col, p = P) {
+      ctx.fillStyle = col;
+      rows.forEach((r, ri) => { for (let ci = 0; ci < r.length; ci++) if (r[ci] === 'X') ctx.fillRect(x + ci * p, y + ri * p, p, p); });
+    }
+
+    function draw() {
+      ctx.fillStyle = c('bg'); ctx.fillRect(0, 0, 1200, 630);
+
+      // Three parallax layers of stars, as in the game; the big ones keep clear of the name.
+      const sizes = [2, 3, 5], alphas = [0.28, 0.5, 0.85], counts = [120, 50, 14];
+      ctx.fillStyle = c('star');
+      counts.forEach((n, l) => {
+        for (let i = 0; i < n; i++) {
+          const x = Math.round(rnd() * 1200), y = Math.round(rnd() * 630);
+          if (l === 2 && x < 640) continue;
+          ctx.globalAlpha = alphas[l];
+          ctx.fillRect(x, y, sizes[l], sizes[l]);
+        }
+      });
+      ctx.globalAlpha = 1;
+
+      // Wave 1 formation.
+      const colW = 124, fx = 905 - (colW * 4) / 2, rowY = [108, 252];
+      const sw = SPR.drone[0].length * P, sh = SPR.drone.length * P;
+      const cx = i => fx + colW * i + colW / 2;
+      ctx.font = '500 15px "Pixelify Sans", monospace'; ctx.textAlign = 'center'; ctx.textBaseline = 'top';
+      ROWS.forEach((row, ri) => row.forEach((label, ci) => {
+        if (label === 'AI') return; // just shot down
+        sprite(SPR.drone, Math.round(cx(ci) - sw / 2), rowY[ri], ROW_COLORS[ri]);
+        ctx.fillStyle = c('mute'); ctx.fillText(label, cx(ci), rowY[ri] + sh + 8);
+      }));
+
+      // Where AI was: the classic arcade explosion, with a few sparks in the invader's colour.
+      const bx = cx(2), by = rowY[1] + sh / 2;
+      sprite(SPR.boom, Math.round(bx - (13 * P) / 2), Math.round(by - (8 * P) / 2), c('ink'));
+      for (let i = 0; i < 9; i++) {
+        const a = (i / 9) * Math.PI * 2 + rnd() * 0.5, d = 52 + rnd() * 16;
+        ctx.globalAlpha = 0.5 + rnd() * 0.5; ctx.fillStyle = ROW_COLORS[1];
+        ctx.fillRect(Math.round(bx + Math.cos(a) * d - P / 2), Math.round(by + Math.sin(a) * d * 0.7 - P / 2), P, P);
+      }
+      ctx.globalAlpha = 1;
+      ctx.font = '600 26px "Pixelify Sans", monospace'; ctx.fillStyle = ROW_COLORS[1];
+      ctx.fillText('+AI', bx, by - 72);
+
+      // Mystery ship crossing the top.
+      sprite(SPR.saucer, 1012, 46, c('a3'), 5);
+
+      // Ship, with its next shot already on the way to TYPESCRIPT.
+      const shipX = Math.round(bx - (11 * P) / 2), shipY = 520;
+      sprite(SPR.ship, shipX, shipY, c('a1'));
+      ctx.fillStyle = c('a3'); ctx.fillRect(shipX + 5 * P, shipY + 8 * P, P, 2 * P);
+      ctx.fillStyle = c('a2'); ctx.fillRect(shipX + 5 * P, shipY + 10 * P, P, P);
+      ctx.fillStyle = c('a1'); ctx.fillRect(bx - P / 2, 410, P, 4 * P);
+    }
+
+    Promise.all(['500 15px "Pixelify Sans"', '600 26px "Pixelify Sans"'].map(f => document.fonts.load(f)))
+      .then(() => document.fonts.ready).then(draw);
+  </script>
+</body>
+</html>
